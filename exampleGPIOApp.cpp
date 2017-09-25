@@ -22,24 +22,27 @@ int main(int argc, char *argv[]){
     // gpioActiveLow(pushButton, true);
 
 
-    unsigned int micro_sec_delay = 1000000;
+    //unsigned int micro_sec_delay = 1000000;
+    unsigned int micro_sec_delay = 15000;
     //gpioSetValue(redLED, on);
     usleep(3000000);         // off for 200ms
     // Flash the LED 5 times
-    for (unsigned char i = 0; i < 5; i++) {
+    for (unsigned char i = 0; i < 100; i++) {
         /// Move car backguards
-        std::cout << "Move Car Forward" << std::endl;
+        //std::cout << "Move Car Forward" << std::endl;
         gpioSetValue(redLED, on);
         usleep(micro_sec_delay);         // on for 200ms
-        std::cout << "Stop Car" << std::endl;
+        //std::cout << "Stop Car" << std::endl;
         gpioSetValue(redLED, off);
         usleep(micro_sec_delay);         // off for 200ms
         /// Move car forwards
-        std::cout << "Move Car Backward" << std::endl;
-        gpioSetValue(pushButton, on);
+        //std::cout << "Move Car Backward" << std::endl;
+        //gpioSetValue(pushButton, on);
+        gpioSetValue(redLED, on);
         usleep(micro_sec_delay);         // on for 200ms
-        std::cout << "Stop Car" << std::endl;
-        gpioSetValue(pushButton, off);
+        //std::cout << "Stop Car" << std::endl;
+        //gpioSetValue(pushButton, off);
+        gpioSetValue(redLED, off);
         usleep(micro_sec_delay);         // off for 200ms
     }
 
