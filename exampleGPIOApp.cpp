@@ -28,14 +28,14 @@ int main(int argc, char *argv[]){
     // Flash the LED 5 times
     for (unsigned char i = 0; i < 5; i++) {
         /// Move car backguards
-        std::cout << "Move Car Backguard" << std::endl;
+        std::cout << "Move Car Forward" << std::endl;
         gpioSetValue(redLED, on);
         usleep(micro_sec_delay);         // on for 200ms
         std::cout << "Stop Car" << std::endl;
         gpioSetValue(redLED, off);
         usleep(micro_sec_delay);         // off for 200ms
         /// Move car forwards
-        std::cout << "Move Car Forward" << std::endl;
+        std::cout << "Move Car Backward" << std::endl;
         gpioSetValue(pushButton, on);
         usleep(micro_sec_delay);         // on for 200ms
         std::cout << "Stop Car" << std::endl;
