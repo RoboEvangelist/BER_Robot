@@ -18,18 +18,11 @@ int main(int argc, char *argv[]){
     gpioExport(redLED) ;
     gpioSetDirection(pushButton, outputPin) ;
     gpioSetDirection(redLED, outputPin) ;
-    //gpioSetValue(redLED, on);
-    // Reverse the button wiring; this is for when the button is wired
-    // with a pull up resistor
-    // gpioActiveLow(pushButton, true);
 
-
-    //unsigned int micro_sec_delay = 1000000;
-    unsigned int micro_sec_delay = 15000;
-    //gpioSetValue(redLED, on);
+    unsigned int micro_sec_delay = 1000;
     usleep(3000000);         // off for 200ms
     // Flash the LED 5 times
-    for (unsigned char i = 0; i < 100; i++) {
+    for (unsigned char i = 0; i < 200; i++) {
         /// Move car backguards
         //std::cout << "Move Car Forward" << std::endl;
         gpioSetValue(redLED, on);
@@ -47,32 +40,6 @@ int main(int argc, char *argv[]){
         gpioSetValue(redLED, off);
         usleep(micro_sec_delay);         // off for 200ms
     }
-
-//    // Wait for the push button to be pressed
-//    std::cout << "Please press the button!" << std::endl;
-//
-//    unsigned int value = low;
-//    int ledValue = low ;
-//    // Turn off the LED
-//    gpioSetValue(redLED,low) ;
-//    for (int i = 0 ; i < 10000 ; i++) {
-//        gpioGetValue(pushButton, &value) ;
-//        // Useful for debugging
-//        // std::cout << "Button " << value << std::endl;
-//        if (value==high && ledValue != high) {
-//            // button is pressed ; turn the LED on
-//            ledValue = high ;
-//            gpioSetValue(redLED,on) ;
-//        } else {
-//            // button is *not* pressed ; turn the LED off
-//            if (ledValue != low) {
-//                ledValue = low ;
-//                gpioSetValue(redLED,off) ;
-//            }
-//
-//        }
-//        usleep(1000); // sleep for a millisecond
-//    }
 
     std::cout << "GPIO example finished." << std::endl;
     gpioUnexport(redLED);     // unexport the LED
