@@ -44,12 +44,19 @@
  ****************************************************************/
  
 #define SYSFS_GPIO_DIR "/sys/class/gpio"
+#define SYSFS_PWM_DIR "/sys/class/pwm/pwmchip0"
+#define PWM0 0
+#define PWM2 2
+#define PWM3 3
 #define POLL_TIMEOUT (3 * 1000) /* 3 seconds */
 #define MAX_BUF 64
 
 typedef unsigned int jetsonGPIO ;
 typedef unsigned int pinDirection ;
 typedef unsigned int pinValue ;
+typedef unsigned int pwm_period_nano_seconds;
+typedef unsigned int pwm_duty_cycle_nano_seconds;
+typedef unsigned int pwm_channel;
 
 enum pinDirections {
 	inputPin  = 0,
@@ -84,6 +91,10 @@ int gpioSetEdge ( jetsonGPIO gpio, char *edge ) ;
 int gpioOpen ( jetsonGPIO gpio ) ;
 int gpioClose ( int fileDescriptor ) ;
 int gpioActiveLow ( jetsonGPIO gpio, unsigned int value ) ;
+int gpioSetPwmPeriod(pwm_period_nano_seconds period,
+  pwm_channel channel) ;
+int gpioSetPwmDutyCycle(pwm_duty_cycle_nano_seconds duty_cycle,
+  pwm_channel channel) ;
 
 
 

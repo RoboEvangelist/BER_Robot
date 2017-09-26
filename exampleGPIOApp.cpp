@@ -9,8 +9,10 @@ int main(int argc, char *argv[]){
 
     std::cout << "Testing the GPIO Pins" << std::endl;
 
-    jetsonGPIO redLED = gpio165;       ///< gpio165 from Jetson J3A2 pin 55
-    jetsonGPIO pushButton = gpio166;   ///< gpio166 from Jetson J3A2 pin 58
+    /// Thse pins are both, I/O, and PWM pins
+    jetsonGPIO redLED = gpio165;       ///< gpio165 from Jetson J3A2 pin 55 pwm2
+    jetsonGPIO pushButton = gpio166;   ///< gpio166 from Jetson J3A2 pin 58 pwm3
+
     // Make the button and led available in user space
     gpioExport(pushButton) ;
     gpioExport(redLED) ;
