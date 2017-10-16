@@ -20,8 +20,8 @@ int main(int argc, char *argv[]){
     //jetsonGPIO pushButton = gpio166;   ///< gpio166 from Jetson J3A2 pin 58 pwm3
     
     /// Jetson Tx2 pins
-    jetsonTX1GPIONumber redLED = gpio219 ;     // Ouput
-    jetsonTX1GPIONumber pushButton = gpio38 ; // Input
+    jetsonTX1GPIONumber redLED = gpio219 ;     ///< pin 29 in J21
+    jetsonTX1GPIONumber pushButton = gpio187 ;  ///< pin 13 in J21
 
     // Make the button and led available in user space
     gpioExport(pushButton) ;
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
     gpioSetDirection(pushButton, outputPin) ;
     gpioSetDirection(redLED, outputPin) ;
 
-    unsigned int micro_sec_delay = 1000;
+    unsigned int micro_sec_delay = 5000;
     usleep(3000000);         // off for 200ms
     // Flash the LED 5 times
     for (unsigned char i = 0; i < 200; i++) {
