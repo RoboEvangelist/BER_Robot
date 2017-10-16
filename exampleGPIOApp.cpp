@@ -1,5 +1,11 @@
 // exampleApp.c
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <termios.h>
+#include <time.h>
+#include <sys/time.h>
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -9,9 +15,13 @@ int main(int argc, char *argv[]){
 
     std::cout << "Testing the GPIO Pins" << std::endl;
 
-    /// Thse pins are both, I/O, and PWM pins
-    jetsonGPIO redLED = gpio165;       ///< gpio165 from Jetson J3A2 pin 55 pwm2
-    jetsonGPIO pushButton = gpio166;   ///< gpio166 from Jetson J3A2 pin 58 pwm3
+    /// Thse pins are both, I/O, and PWM pins on Jetson Tk1
+    //jetsonGPIO redLED = gpio165;       ///< gpio165 from Jetson J3A2 pin 55 pwm2
+    //jetsonGPIO pushButton = gpio166;   ///< gpio166 from Jetson J3A2 pin 58 pwm3
+    
+    /// Jetson Tx2 pins
+    jetsonTX1GPIONumber redLED = gpio219 ;     // Ouput
+    jetsonTX1GPIONumber pushButton = gpio38 ; // Input
 
     // Make the button and led available in user space
     gpioExport(pushButton) ;
@@ -24,18 +34,13 @@ int main(int argc, char *argv[]){
     // Flash the LED 5 times
     for (unsigned char i = 0; i < 200; i++) {
         /// Move car backguards
-        //std::cout << "Move Car Forward" << std::endl;
         gpioSetValue(redLED, on);
         usleep(micro_sec_delay);         // on for 200ms
-        //std::cout << "Stop Car" << std::endl;
         gpioSetValue(redLED, off);
         usleep(micro_sec_delay);         // off for 200ms
         /// Move car forwards
-        //std::cout << "Move Car Backward" << std::endl;
-        //gpioSetValue(pushButton, on);
         gpioSetValue(redLED, on);
         usleep(micro_sec_delay);         // on for 200ms
-        //std::cout << "Stop Car" << std::endl;
         //gpioSetValue(pushButton, off);
         gpioSetValue(redLED, off);
         usleep(micro_sec_delay);         // off for 200ms

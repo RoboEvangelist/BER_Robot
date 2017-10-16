@@ -70,6 +70,7 @@ enum pinValues {
     on = 1
 }  ;
 
+/// Jetson Tk1 pins
 enum jetsonGPIONumber {
     gpio57  =  57,    // J3A1 - Pin 50
 	gpio160 = 160,	  // J3A2 - Pin 40	
@@ -80,6 +81,18 @@ enum jetsonGPIONumber {
 	gpio165 = 165,    // J3A2 - Pin 55
 	gpio166 = 166     // J3A2 - Pin 58
 }  ;
+
+/// Jetson Tx1/Tx2 pins
+enum jetsonTX1GPIONumber {
+       gpio36 = 36,      // J21 - Pin 32 - Unused - AO_DMIC_IN_CLK
+       gpio37 = 37,      // J21 - Pin 16 - Unused - AO_DMIC_IN_DAT
+       gpio38 = 38,      // J21 - Pin 13 - Bidir  - GPIO20/AUD_INT
+       gpio63 = 63,      // J21 - Pin 33 - Bidir  - GPIO11_AP_WAKE_BT
+       gpio184 = 184,    // J21 - Pin 18 - Input  - GPIO16_MDM_WAKE_AP
+       gpio186 = 186,    // J21 - Pin 31 - Input  - GPIO9_MOTION_INT
+       gpio187 = 187,    // J21 - Pin 37 - Output - GPIO8_ALS_PROX_INT
+       gpio219 = 219,    // J21 - Pin 29 - Output - GPIO19_AUD_RST
+} ;
 
 
 int gpioExport ( jetsonGPIO gpio ) ;
