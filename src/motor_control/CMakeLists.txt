@@ -49,9 +49,8 @@ include_directories(
 )
 include_directories(include)
 
-add_executable(exampleGPIOApp src/exampleGPIOApp.cpp 
-  src/jetsonGPIO.c 
+add_executable(exampleGPIOApp src/exampleGPIOApp.cpp src/jetsonGPIO.cpp
 )
 target_link_libraries(exampleGPIOApp ${catkin_LIBRARIES})
 #target_link_libraries(exampleGPIOApp ${OpenCV_LIBS})
-add_dependencies(exampleGPIOApp ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+#add_dependencies(exampleGPIOApp ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
