@@ -7,8 +7,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
-#include "jetsonGPIO.h"
-
+#include <motor_control/jetsonGPIO.h>
 
 //
 // gpioExport

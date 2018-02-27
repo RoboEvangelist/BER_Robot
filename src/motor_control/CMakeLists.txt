@@ -23,7 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 # find_package(Boost REQUIRED COMPONENTS system)
 
 # OpenCV is not a ROS package, so you gotta do this:
-find_package(OpenCV REQUIRED)
+#find_package(OpenCV REQUIRED)
 
 ###################################
 ## catkin specific configuration ##
@@ -51,3 +51,10 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 include_directories(include)
+
+add_executable(exampleGPIOApp src/exampleGPIOApp.cpp 
+  src/jetsonGPIO.c 
+)
+target_link_libraries(exampleGPIOApp ${catkin_LIBRARIES})
+#target_link_libraries(exampleGPIOApp ${OpenCV_LIBS})
+add_dependencies(v_recognize_left_gesture_node ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)

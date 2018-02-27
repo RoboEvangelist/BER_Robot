@@ -9,7 +9,7 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>
-#include "jetsonGPIO.h"
+#include <motor_control/jetsonGPIO.h>
 
 int main(int argc, char *argv[]){
 
