@@ -5,9 +5,6 @@ project(motor_control)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  cv_bridge
-  image_transport
-  image_geometry
   message_generation
   message_runtime
   roscpp
@@ -36,7 +33,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS tf cv_bridge image_transport geometry_msgs message_generation
+  CATKIN_DEPENDS tf geometry_msgs message_generation
 #  DEPENDS system_lib
 )
 
@@ -57,4 +54,4 @@ add_executable(exampleGPIOApp src/exampleGPIOApp.cpp
 )
 target_link_libraries(exampleGPIOApp ${catkin_LIBRARIES})
 #target_link_libraries(exampleGPIOApp ${OpenCV_LIBS})
-add_dependencies(v_recognize_left_gesture_node ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(exampleGPIOApp ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
