@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
   gpioSetDirection(pushButton, outputPin) ;
   gpioSetDirection(redLED, outputPin) ;
 
-  unsigned int micro_sec_delay = 5000;
+  unsigned int micro_sec_delay = 15000;
   usleep(3000000);         // off for 200ms
   // Flash the LED 5 times
   for (unsigned char i = 0; i < 200; i++) {
