@@ -1,32 +1,14 @@
 // exampleApp.c
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <termios.h>
-#include <time.h>
-#include <sys/time.h>
-#include <iostream>
-#include <string>
-#include <unistd.h>
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <math.h>
-#include <algorithm>    /*1*/
-#include <exception>
-
-#include <motor_control/jetsonGPIO.h>
-
-#include <ros/ros.h>
-#include <tf/transform_listener.h>
+#include <motor_control/motor_control.hpp>
 
 int main(int argc, char** argv) {
 
   ros::init(argc, argv, "motor_control");
-
   std::cout << "Testing the GPIO Pins" << std::endl;
+
+  /// initialize motor control object
+  //TrackingPeople gesture_object();
 
   /// Thse pins are both, I/O, and PWM pins on Jetson Tk1
   //jetsonGPIO redLED = gpio165;       ///< gpio165 from Jetson J3A2 pin 55 pwm2
