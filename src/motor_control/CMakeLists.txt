@@ -10,7 +10,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   sensor_msgs
-  stereo_msgs
   std_msgs
   geometry_msgs
   tf
@@ -49,7 +48,7 @@ include_directories(
 )
 include_directories(include)
 
-add_executable(exampleGPIOApp src/exampleGPIOApp.cpp src/jetsonGPIO.cpp
+add_executable(exampleGPIOApp src/exampleGPIOApp.cpp src/jetsonGPIO.cpp src/motor_control.cpp
 )
 target_link_libraries(exampleGPIOApp ${catkin_LIBRARIES})
 #target_link_libraries(exampleGPIOApp ${OpenCV_LIBS})

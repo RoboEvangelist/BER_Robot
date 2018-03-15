@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
   std::cout << "Testing the GPIO Pins" << std::endl;
 
   /// initialize motor control object
-  //TrackingPeople gesture_object();
+  MotorControl motor_object();
 
   /// Thse pins are both, I/O, and PWM pins on Jetson Tk1
   //jetsonGPIO redLED = gpio165;       ///< gpio165 from Jetson J3A2 pin 55 pwm2
