@@ -31,9 +31,10 @@
 class IrSensor
 {
   ros::NodeHandle nh_;
-  /**< subscriber for the camera info of the rectified mono image. */
-  //ros::Publisher pub_range("range_data", &range_msg_);
-  ros::Publisher pub_range_;
+  /**< Punlishers of the IR readings */
+  ros::Publisher pub_range_left_;
+  ros::Publisher pub_range_center_;
+  ros::Publisher pub_range_right_;
 
 public:
   IrSensor(int32_t user_id)
@@ -72,7 +73,12 @@ public:
 //    }
 //    param_nh_.param("min_user_distance", min_user_distance_, 0.9);
 //    param_nh_.param("max_user_distance", max_user_distance_, 1.8);
-    pub_range_ = nh_.advertise<sensor_msgs::Range>("/ir/range_data", 50);
+    pub_range_left_ =
+      nh_.advertise<sensor_msgs::Range>("/ir/left_range_data", 50);
+    pub_range_center_ =
+      nh_.advertise<sensor_msgs::Range>("/ir/center_range_data", 50);
+    pub_range_right_ =
+      nh_.advertise<sensor_msgs::Range>("/ir/right_range_data", 50);
 //
 //    /** Subscribe to the skeleton people tracking feed, then republish if
 //     *  user requested through the TrackPeople service is found
@@ -106,11 +112,17 @@ public:
 //    system_and_skeleton_id_msgs_.data.push_back(0);
 //    system_and_skeleton_id_msgs_.data.push_back(0);
 
-  range_msg_.radiation_type = sensor_msgs::Range::INFRARED;
-  range_msg_.header.frame_id = "/ir_ranger";
-  range_msg_.field_of_view = 0.01;
-  range_msg_.min_range = 0.03;  // For GP2D120XJ00F only. Adjust for other IR rangers
-  range_msg_.max_range = 0.4;   // For GP2D120XJ00F only. Adjust for other IR rangers
+  range_msg_left_.radiation_type = sensor_msgs::Range::INFRARED;
+  range_msg_left_.header.frame_id = "/ir_left_ranger";
+  range_msg_left_.field_of_view = 0.01;
+  range_msg_left_.min_range = 0.03;  // For GP2D120XJ00F only. Adjust for other IR rangers
+  range_msg_left_.max_range = 0.4;   // For GP2D120XJ00F only. Adjust for other IR rangers
+
+  range_msg_center_ = range_msg_left_;
+  range_msg_center_.header.frame_id = "/ir_center_ranger";
+
+  range_msg_right_ = range_msg_left_;
+  range_msg_right_.header.frame_id = "/ir_right_ranger";
   }
 
   ~IrSensor()
@@ -129,7 +141,9 @@ public:
 
 private:
   // stores the range of the IR sensor
-  sensor_msgs::Range range_msg_;
+  sensor_msgs::Range range_msg_left_;
+  sensor_msgs::Range range_msg_center_;
+  sensor_msgs::Range range_msg_right_;
   uint32_t analog_pin_;
   uint32_t range_timer_;
 }; 

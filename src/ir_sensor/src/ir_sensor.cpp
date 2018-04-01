@@ -15,8 +15,15 @@ float IrSensor::get_range() {
 }
 
 void IrSensor::publish_range() {
+  /// TODO: pass the port number as agument to get_range()
   //range_msg_.header.stamp = nh_.now();
-  range_msg_.range = get_range();
-  pub_range_.publish(range_msg_);
+  range_msg_left_.range = get_range();
+  range_msg_center_.range = get_range();
+  range_msg_right_.range = get_range();
+
+  /// publish the readings from all three IR sesors
+  pub_range_left_.publish(range_msg_left_);
+  pub_range_center_.publish(range_msg_center_);
+  pub_range_right_.publish(range_msg_right_);
 }
 
