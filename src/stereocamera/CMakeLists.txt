@@ -1,5 +1,26 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(ir_sensor)
+cmake_minimum_required(VERSION 2.4.6)
+project(stereocamera)
+
+# Set the build type.  Options are:
+#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
+#  Debug          : w/ debug symbols, w/o optimization
+#  Release        : w/o debug symbols, w/ optimization
+#  RelWithDebInfo : w/ debug symbols, w/ optimization
+#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
+#set(ROS_BUILD_TYPE RelWithDebInfo)
+
+#uncomment if you have defined messages
+#rosbuild_genmsg()
+#uncomment if you have defined services
+#rosbuild_gensrv()
+
+#common commands for building c++ executables and libraries
+#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
+#target_link_libraries(${PROJECT_NAME} another_library)
+#rosbuild_add_boost_directories()
+#rosbuild_link_boost(${PROJECT_NAME} thread)
+#rosbuild_add_executable(example examples/example.cpp)
+#target_link_libraries(example ${PROJECT_NAME})
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -13,6 +34,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   tf
+  cv_bridge
+  image_transport
+  compressed_image_transport
 )
 
 ## System dependencies are found with CMake's conventions
@@ -31,7 +55,7 @@ find_package(OpenCV REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
+#  INCLUDE_DIRS include
   CATKIN_DEPENDS tf geometry_msgs message_generation sensor_msgs
 #  DEPENDS system_lib
 )
@@ -48,8 +72,9 @@ include_directories(
 )
 include_directories(include)
 
-add_executable(ir_sensor_main src/ir_sensor_main.cpp src/jetsonGPIO.cpp src/ir_sensor.cpp
-)
-target_link_libraries(ir_sensor_main ${catkin_LIBRARIES})
+add_executable(stereocamera_broadcast src/stereocamera_broadcast.cpp src/libcam.cpp)
+target_link_libraries(stereocamera_broadcast ${catkin_LIBRARIES})
 #target_link_libraries(exampleGPIOApp ${OpenCV_LIBS})
 #add_dependencies(exampleGPIOApp ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+
+#rosbuild_add_executable(stereocam_subscribe src/stereocamera_subscribe.cpp)
