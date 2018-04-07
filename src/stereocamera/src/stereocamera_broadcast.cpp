@@ -278,8 +278,8 @@ int main(int argc, char** argv)
   int width=320;
   int height=240;
   std::string str="";
-  dev_left = "/dev/video1";
-  dev_right = "/dev/video0";
+  dev_left = "/dev/video2";
+  dev_right = "/dev/video1";
   fps = 30;
 
   nh.getParam("width", val);
