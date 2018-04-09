@@ -23,6 +23,11 @@ ros::Publisher right_pub_range("right_range_data", &right_range_msg);
 const int left_analog_pin = 2;    /**< robot's left IR sensor */
 const int center_analog_pin = 1;  /**< center IR sensor */
 const int right_analog_pin = 0;   /**< robot's right IR sensor */
+const int time_delta = 1000;
+const int left_right_max_analog = 650; /**< 650 equivalent to 10cm */
+const int left_right_min_analog = 300;  /**< minimum save analog reading */
+const int center_max_analog = 650; /**< 650 equivalent to 4cm */
+const int center_min_analog = 100;  /**< minimum safe analog reading before avoiding an obstacle */
 unsigned long range_timer;
 
 /*
@@ -32,14 +37,15 @@ unsigned long range_timer;
 float getRange(int pin_num){
     int sample;
     // Get data
-    sample = analogRead(pin_num)/4;
+    sample = analogRead(pin_num);
     // if the ADC reading is too low, 
     //   then we are really far away from anything
-    if(sample < 10)
-        return 254;     // max range
+//    if(sample < 10)
+//        return 254;     // max range
     // Magic numbers to get cm
-    sample= 1309/(sample-3);
-    return (sample - 1)/100; //convert to meters
+//    sample= 1309/(sample-3);
+    //return (sample - 1)/100; //convert to meters
+    return sample;
 }
 
 char left_frameid[] = "/ir_left_ranger";
@@ -75,11 +81,14 @@ void setup()
 
 void loop()
 {
-  // publish the range value every 50 milliseconds
+  // publish the range value every time_delta milliseconds
   //   since it takes that long for the sensor to stabilize
-  if ( (millis()-range_timer) > 50){
+  if ( (millis()-range_timer) > time_delta){
     left_range_msg.range = getRange(left_analog_pin);
     left_range_msg.header.stamp = nh.now();
+    if (left_range_msg.range > left_right_min_analog) {
+      left_range_msg.range = 1;
+    }
     left_pub_range.publish(&left_range_msg);
 
     /// Sharp IR Ranger, Model# GP2D120XJ00F
@@ -88,10 +97,13 @@ void loop()
     center_pub_range.publish(&center_range_msg);
 
     right_range_msg.range = getRange(right_analog_pin);
+    if (right_range_msg.range > left_right_min_analog) {
+      right_range_msg.range = 1;
+    }
     right_range_msg.header.stamp = nh.now();
     right_pub_range.publish(&right_range_msg);
     
-    range_timer =  millis() + 50;
+    range_timer =  millis() + time_delta;
   }
   nh.spinOnce();
 }
