@@ -20,9 +20,9 @@ ros::Publisher center_pub_range("center_range_data", &center_range_msg);
 sensor_msgs::Range right_range_msg;
 ros::Publisher right_pub_range("right_range_data", &right_range_msg);
 
-const int left_analog_pin = 0;  /**< left IR sensor */
-const int center_analog_pin = 0;  /**< center IR sensor */
-const int right_analog_pin = 0;  /**< right IR sensor */
+const int left_analog_pin = 2;    /**< robot's left IR sensor */
+const int center_analog_pin = 1;  /**< center IR sensor */
+const int right_analog_pin = 0;   /**< robot's right IR sensor */
 unsigned long range_timer;
 
 /*
@@ -53,24 +53,24 @@ void setup()
   nh.advertise(center_pub_range);
   nh.advertise(right_pub_range);
   
+  /// Sharp IR Range Finder 2Y0A21
   left_range_msg.radiation_type = sensor_msgs::Range::INFRARED;
   left_range_msg.header.frame_id = left_frameid;
   left_range_msg.field_of_view = 0.01;
-  left_range_msg.min_range = 0.03;
-  left_range_msg.max_range = 0.4;
+  left_range_msg.min_range = 0.1;
+  left_range_msg.max_range = 0.8;
 
+  /// Sharp IR Ranger, Model# GP2D120XJ00F
   center_range_msg.radiation_type = sensor_msgs::Range::INFRARED;
   center_range_msg.header.frame_id = center_frameid;
   center_range_msg.field_of_view = 0.01;
-  center_range_msg.min_range = 0.03;
-  center_range_msg.max_range = 0.4;
+  /// range in meters. See specsheet for values
+  center_range_msg.min_range = 0.04;
+  center_range_msg.max_range = 0.3;
 
-  right_range_msg.radiation_type = sensor_msgs::Range::INFRARED;
+  /// Sharp IR Range Finder 2Y0A21
+  right_range_msg = left_range_msg;
   right_range_msg.header.frame_id = right_frameid;
-  right_range_msg.field_of_view = 0.01;
-  right_range_msg.min_range = 0.03;
-  right_range_msg.max_range = 0.4;
-  
 }
 
 void loop()
@@ -82,6 +82,7 @@ void loop()
     left_range_msg.header.stamp = nh.now();
     left_pub_range.publish(&left_range_msg);
 
+    /// Sharp IR Ranger, Model# GP2D120XJ00F
     center_range_msg.range = getRange(center_analog_pin);
     center_range_msg.header.stamp = nh.now();
     center_pub_range.publish(&center_range_msg);
