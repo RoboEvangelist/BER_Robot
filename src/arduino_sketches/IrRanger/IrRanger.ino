@@ -8,6 +8,10 @@
 #include <ros/time.h>
 #include <sensor_msgs/Range.h>
 
+char left_frameid[] = "/ir_left_ranger";
+char center_frameid[] = "/ir_center_ranger";
+char right_frameid[] = "/ir_right_ranger";
+
 ros::NodeHandle  nh;
 
 /// left IR sensor
@@ -28,16 +32,49 @@ const int left_right_max_analog = 650; /**< 650 equivalent to 10cm */
 const int left_right_min_analog = 300;  /**< minimum save analog reading */
 const int center_max_analog = 650; /**< 650 equivalent to 4cm */
 const int center_min_analog = 100;  /**< minimum safe analog reading before avoiding an obstacle */
+
 /// pins control the motor controller
 const int motor_conroller_one_pin = 5;
 const int motor_conroller_two_pin = 6;
+
+/// if you do 100 and 100, then the car stops
+const int pin_one_motor_speed = 100;  /**< Keep this one constant to control max speed */
+int pin_two_motor_speed = 0;          /**< switch this one between 100 and 200 for slow speed */
+const int kMaxVelForward = 165;
+const int kMinVelBackward = 40;
+
 const int car_turn_one_pin = 9;
 const int car_turn_two_pin = 10;
-int pin_one_motor_speed = 0;
-int pin_two_motor_speed = 0;
 int pin_one_turn_speed = 0;
 int pin_two_turn_speed = 0;
 unsigned long range_timer;
+
+void stopCar() {
+  analogWrite(motor_conroller_one_pin, pin_one_motor_speed);
+  analogWrite(motor_conroller_two_pin, 100);
+}
+
+void moveCarForward() {
+  analogWrite(motor_conroller_one_pin, pin_one_motor_speed);
+  analogWrite(motor_conroller_two_pin, kMaxVelForward);
+}
+
+void moveCarBackward() {
+  analogWrite(motor_conroller_one_pin, pin_one_motor_speed);
+  analogWrite(motor_conroller_two_pin, kMinVelBackward);
+}
+
+void turnCarLeft() {
+  analogWrite(car_turn_one_pin, 0);
+  ///in this pin 100 = complete left turn, 200 = wheels straigth 
+  analogWrite(car_turn_two_pin, 110);
+}
+
+void wheelsStraight() {
+  analogWrite(car_turn_one_pin, 0);
+  ///in this pin 100 = complete left turn, 255 = wheels straigth 
+  analogWrite(car_turn_two_pin, 255);
+}
 
 /*
  * getRange() - samples the analog input from the ranger
@@ -53,20 +90,21 @@ float getRange(int pin_num){
 //        return 254;     // max range
     // Magic numbers to get cm
 //    sample= 1309/(sample-3);
-    //return (sample - 1)/100; //convert to meters
+//    return (sample - 1)/100; //convert to meters
     return sample;
 }
-
-char left_frameid[] = "/ir_left_ranger";
-char center_frameid[] = "/ir_center_ranger";
-char right_frameid[] = "/ir_right_ranger";
 
 void setup()
 {
   /// set pwm pins as output
   pinMode(motor_conroller_one_pin, OUTPUT);
   pinMode(motor_conroller_two_pin, OUTPUT);
+  stopCar();
   
+  pinMode(car_turn_one_pin, OUTPUT);
+  pinMode(car_turn_two_pin, OUTPUT);
+  wheelsStraight();
+
   nh.initNode();
   nh.advertise(left_pub_range);
   nh.advertise(center_pub_range);
@@ -95,39 +133,34 @@ void setup()
 void loop()
 {
   /// lets add sleep to avoid crashing the arduino
-  delay(100);
+  delay(50);
   left_range_msg.range = getRange(left_analog_pin);
   left_range_msg.header.stamp = nh.now();
-  if (left_range_msg.range > left_right_min_analog) {
-    left_range_msg.range = 1;
-  }
   left_pub_range.publish(&left_range_msg);
+
+  right_range_msg.range = getRange(right_analog_pin);
+  right_range_msg.header.stamp = nh.now();
+  right_pub_range.publish(&right_range_msg);
+  if (right_range_msg.range > 250) {
+    turnCarLeft();
+  }
+  else
+    wheelsStraight();
 
   /// Sharp IR Ranger, Model# GP2D120XJ00F
   center_range_msg.range = getRange(center_analog_pin);
   center_range_msg.header.stamp = nh.now();
   center_pub_range.publish(&center_range_msg);
-
-  right_range_msg.range = getRange(right_analog_pin);
-  if (right_range_msg.range > left_right_min_analog) {
-    right_range_msg.range = 1;
+  if (center_range_msg.range > 300) {
+    moveCarBackward();
   }
-  right_range_msg.header.stamp = nh.now();
-  right_pub_range.publish(&right_range_msg);
-  
-  range_timer =  millis() + time_delta;
-  if (pin_one_motor_speed == 0) {
-    pin_one_motor_speed = 50;
-    pin_two_motor_speed = 0;
+  else if (center_range_msg.range < 200) {
+    moveCarForward();
   }
-  else {
-    pin_one_motor_speed = 0;
-    pin_two_motor_speed = 50;
-  }
-  analogWrite(motor_conroller_one_pin, 100);
-  analogWrite(motor_conroller_two_pin, 20);
-  analogWrite(car_turn_one_pin, 20);
-  analogWrite(car_turn_two_pin, 100);
+  else
+    stopCar();
+    
+  //stopCar();
   nh.spinOnce();
 }
 
