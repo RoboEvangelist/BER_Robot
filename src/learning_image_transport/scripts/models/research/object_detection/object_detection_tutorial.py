@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import numpy as np
 import os
 import six.moves.urllib as urllib
@@ -11,10 +13,13 @@ from io import StringIO
 from matplotlib import pyplot as plt
 from PIL import Image
 
+import rospy
+from std_msgs.msg import String
+
 import cv2
-#cap = cv2.VideoCapture(2)
-gst_str = ("nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR")
-cap = cv2.VideoCapture(gst_str)
+cap = cv2.VideoCapture(2)
+#gst_str = ("nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR")
+#cap = cv2.VideoCapture(gst_str)
 
 # This is needed since the notebook is stored in the object_detection folder.
 #sys.path.append("..")
@@ -123,44 +128,50 @@ counter = 0
 
 # In[10]:
 
+rospy.init_node('object_detection', anonymous=False)
+rate = rospy.Rate(30) # 10hz
+pub = rospy.Publisher('chatter', String, queue_size=10)
 with detection_graph.as_default():
   with tf.Session(graph=detection_graph) as sess:
-    while True:
+    while not rospy.is_shutdown():
       ret, image_np = cap.read()
-      # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
-      image_np_expanded = np.expand_dims(image_np, axis=0)
-      image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
-      # Each box represents a part of the image where a particular object was detected.
-      boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
-      # Each score represent how level of confidence for each of the objects.
-      # Score is shown on the result image, together with the class label.
-      scores = detection_graph.get_tensor_by_name('detection_scores:0')
-      classes = detection_graph.get_tensor_by_name('detection_classes:0')
-      num_detections = detection_graph.get_tensor_by_name('num_detections:0')
-      # Actual detection.
-      (boxes, scores, classes, num_detections) = sess.run(
-          [boxes, scores, classes, num_detections],
-          feed_dict={image_tensor: image_np_expanded})
-      # Visualization of the results of a detection.
-      vis_util.visualize_boxes_and_labels_on_image_array(
-          image_np,
-          np.squeeze(boxes),
-          np.squeeze(classes).astype(np.int32),
-          np.squeeze(scores),
-          category_index,
-          use_normalized_coordinates=True,
-          line_thickness=8)
+#      # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
+#      image_np_expanded = np.expand_dims(image_np, axis=0)
+#      image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
+#      # Each box represents a part of the image where a particular object was detected.
+#      boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
+#      # Each score represent how level of confidence for each of the objects.
+#      # Score is shown on the result image, together with the class label.
+#      scores = detection_graph.get_tensor_by_name('detection_scores:0')
+#      classes = detection_graph.get_tensor_by_name('detection_classes:0')
+#      num_detections = detection_graph.get_tensor_by_name('num_detections:0')
+#      # Actual detection.
+#      (boxes, scores, classes, num_detections) = sess.run(
+#          [boxes, scores, classes, num_detections],
+#          feed_dict={image_tensor: image_np_expanded})
+#      # Visualization of the results of a detection.
+#      vis_util.visualize_boxes_and_labels_on_image_array(
+#          image_np,
+#          np.squeeze(boxes),
+#          np.squeeze(classes).astype(np.int32),
+#          np.squeeze(scores),
+#          category_index,
+#          use_normalized_coordinates=True,
+#          line_thickness=8)
 
-      cv2.imshow('object detection', cv2.resize(image_np, (800,600)))
-      # write the flipped frame
-      print(image_np.shape)
-      out.write(image_np)
+#      cv2.imshow('object detection', cv2.resize(image_np, (800,600)))
+#      # write the flipped frame
+#      out.write(image_np)
+      hello_str = "hello world %s" % rospy.get_time()
+      rospy.loginfo(hello_str)
+      pub.publish(hello_str)
       if cv2.waitKey(25) & 0xFF == ord('q'):
-        cv2.destroyAllWindows()
+#        cv2.destroyAllWindows()
         break
       if counter >= 30:
         break
       counter += 1
+      rate.sleep()
     cap.release()
 out.release()
 
