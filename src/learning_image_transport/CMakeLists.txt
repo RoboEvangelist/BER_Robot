@@ -2,9 +2,12 @@ cmake_minimum_required(VERSION 2.8.3)
 project(learning_image_transport)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 find_package(OpenCV)
+
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
+find_package(TensorFlow REQUIRED)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -120,11 +123,12 @@ include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+  ${TensorFlow_INCLUDE_DIRS}
 )
 
 add_executable(image_subscriber src/image_subscriber.cpp
 )
-target_link_libraries(image_subscriber ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(image_subscriber ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${TensorFlow_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
