@@ -7,12 +7,13 @@
 #include <ros.h>
 #include <ros/time.h>
 #include <sensor_msgs/Range.h>
+#include <std_msgs/String.h>
 
 char left_frameid[] = "/ir_left_ranger";
 char center_frameid[] = "/ir_center_ranger";
 char right_frameid[] = "/ir_right_ranger";
 
-ros::NodeHandle  nh;
+ros::NodeHandle nh;
 
 /// left IR sensor
 sensor_msgs::Range left_range_msg;
@@ -49,6 +50,17 @@ int pin_one_turn_speed = 0;
 int pin_two_turn_speed = 0;
 unsigned long range_timer;
 
+/// check if there are objects too close before car is ordered to moves
+bool object_on_left_state = false;
+bool object_on_right_state = false;
+bool object_on_center_state = false;
+
+void moveCarCb( const std_msgs::String& toggle_msg){
+  //digitalWrite(13, HIGH-digitalRead(13));   // blink the led
+}
+
+ros::Subscriber<std_msgs::String> sub("move_car", &moveCarCb );
+
 void stopCar() {
   analogWrite(motor_conroller_one_pin, pin_one_motor_speed);
   analogWrite(motor_conroller_two_pin, 100);
@@ -68,6 +80,12 @@ void turnCarLeft() {
   analogWrite(car_turn_one_pin, 0);
   ///in this pin 100 = complete left turn, 200 = wheels straigth 
   analogWrite(car_turn_two_pin, 110);
+}
+
+void turnCarRight() {
+  analogWrite(car_turn_one_pin, 110);
+  ///in this pin 100 = complete left turn, 200 = wheels straigth 
+  analogWrite(car_turn_two_pin, 0);
 }
 
 void wheelsStraight() {
@@ -137,15 +155,30 @@ void loop()
   left_range_msg.range = getRange(left_analog_pin);
   left_range_msg.header.stamp = nh.now();
   left_pub_range.publish(&left_range_msg);
-
   right_range_msg.range = getRange(right_analog_pin);
   right_range_msg.header.stamp = nh.now();
   right_pub_range.publish(&right_range_msg);
-  if (right_range_msg.range > 250) {
-    turnCarLeft();
+
+  if ((right_range_msg.range > 250) && (left_range_msg.range > 250)) {
+    /// check if there are objects too close on the left and right
+    object_on_left_state = true;
+    object_on_right_state = true;
   }
-  else
-    wheelsStraight();
+  else if ((left_range_msg.range > 250) && (right_range_msg.range <= 250)) {
+    /// check if there are objects too close on the left
+    turnCarRight();
+    object_on_left_state = true;
+  }
+  else if ((left_range_msg.range <= 250) && (right_range_msg.range > 250)) {
+    /// check if there are objects too close on the left
+    turnCarLeft();
+    object_on_right_state = true;
+  }
+  else {
+    /// left and right side are clear
+    object_on_left_state = false;
+    object_on_right_state = false;
+  }
 
   /// Sharp IR Ranger, Model# GP2D120XJ00F
   center_range_msg.range = getRange(center_analog_pin);
@@ -153,12 +186,18 @@ void loop()
   center_pub_range.publish(&center_range_msg);
   if (center_range_msg.range > 300) {
     moveCarBackward();
+    object_on_center_state = true;
   }
   else if (center_range_msg.range < 200) {
-    moveCarForward();
+    /// car is clear to move forward if necessary
+    object_on_center_state = false;
   }
-  else
-    stopCar();
+  else {
+    /// TODO: stop car only if object no longer too close, but don't interrupt the
+    /// other functions that need to move the car
+    //stopCar();
+    object_on_center_state = false;
+  }
     
   //stopCar();
   nh.spinOnce();
