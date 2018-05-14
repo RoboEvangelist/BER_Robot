@@ -129,7 +129,7 @@ include_directories(
 
 add_executable(image_subscriber src/image_subscriber.cpp
 )
-target_link_libraries(image_subscriber ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${TensorFlow_LIBRARIES} ${EIGEN3_INCLUDE_DIR})
+target_link_libraries(image_subscriber ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${TensorFlow_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
