@@ -17,7 +17,7 @@ import rospy
 from std_msgs.msg import String
 
 import cv2
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(1)
 #gst_str = ("nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR")
 #cap = cv2.VideoCapture(gst_str)
 
@@ -130,10 +130,10 @@ counter = 0
 
 rospy.init_node('object_detection', anonymous=False)
 rate = rospy.Rate(60) # 10hz
-pub = rospy.Publisher('chatter', String, queue_size=10)
 with detection_graph.as_default():
   with tf.Session(graph=detection_graph) as sess:
     while not rospy.is_shutdown():
+#    while True:
       ret, image_np = cap.read()
       # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
       image_np_expanded = np.expand_dims(image_np, axis=0)
@@ -162,9 +162,6 @@ with detection_graph.as_default():
 #      cv2.imshow('object detection', cv2.resize(image_np, (800,600)))
       # write the flipped frame
       out.write(image_np)
-      hello_str = "hello world %s" % rospy.get_time()
-      rospy.loginfo(hello_str)
-      pub.publish(hello_str)
       if cv2.waitKey(25) & 0xFF == ord('q'):
 #        cv2.destroyAllWindows()
         break
