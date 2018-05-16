@@ -16,6 +16,10 @@ find_package(Eigen3 REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
+  rospy
+  sensor_msgs
+  std_msgs
+  vision_msgs
 )
 
 ## System dependencies are found with CMake's conventions

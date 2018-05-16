@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
 #include <cv_bridge/cv_bridge.h>
 
 //#include <tensorflow/cc/ops/const_op.h>
@@ -22,6 +23,12 @@
 //#include <tensorflow/core/public/session.h>
 //#include <tensorflow/core/util/command_line_flags.h>
 
+std::string get_tegra_pipeline(int width, int height, int fps) {
+    return "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)" + std::to_string(width) + ", height=(int)" +
+           std::to_string(height) + ", format=(string)I420, framerate=(fraction)" + std::to_string(fps) +
+           "/1 ! nvvidconv ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink";
+}
+
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   try
@@ -39,10 +46,30 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "image_listener");
   ros::NodeHandle nh;
-  cv::namedWindow("view");
-  cv::startWindowThread();
-  image_transport::ImageTransport it(nh);
-  image_transport::Subscriber sub = it.subscribe("/csi_cam/image_raw", 1, imageCallback);
-  ros::spin();
-  cv::destroyWindow("view");
+
+  // Options
+  int WIDTH = 1920;
+  int HEIGHT = 1080;
+  int FPS = 30;
+  // Define the gstream pipeline
+  std::string pipeline = get_tegra_pipeline(WIDTH, HEIGHT, FPS);
+  std::cout << "Using pipeline: \n\t" << pipeline << "\n";
+  // Create OpenCV capture object, ensure it works.
+  cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
+  if (!cap.isOpened()) {
+      std::cout << "Connection failed";
+      return -1;
+  }
+  // View video
+  cv::Mat frame;
+  while (1) {
+      cap >> frame;  // Get a new frame from camera
+  }
+
+  //cv::namedWindow("view");
+  //cv::startWindowThread();
+  //image_transport::ImageTransport it(nh);
+  //image_transport::Subscriber sub = it.subscribe("/csi_cam/image_raw", 1, imageCallback);
+  //ros::spin();
+  //cv::destroyWindow("view");
 }
