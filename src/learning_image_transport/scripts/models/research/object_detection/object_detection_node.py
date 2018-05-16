@@ -106,15 +106,17 @@ with detection_graph.as_default():
 
         objArray.detections =[]
         objArray.header=data.header
-        object_count=1
 
+        # only store objects of a specific label, and with a specific confidence
         for i in range(num_detections[0]):
             if (np.squeeze(scores)[i] > min_detect_score) and \
                 (np.squeeze(classes)[i] == wanted_label):
-#                object_count+=1
-#                objArray.detections.append(self.object_predict(objects[i], data.header, cv_image.shape))
-                print("Human Detected")
+                objArray.detections.append(\
+                  self.object_predict([np.squeeze(classes)[i], \
+                  np.squeeze(scores)[i], np.squeeze(boxes)[i]], \
+                  data.header, cv_image.shape))
 
+        # publish object location and bounding box info
         self.object_pub.publish(objArray)
 
         img = image_np
@@ -127,26 +129,22 @@ with detection_graph.as_default():
         self.image_pub.publish(image_out)
 
 
-      def object_predict(self,object_data, header,image_shape):
+      def object_predict(self, object_data, header, image_shape):
         image_height,image_width,channels = image_shape
-        obj=Detection2D()
-        obj_hypothesis= ObjectHypothesisWithPose()
+        obj = Detection2D()
+        obj_hypothesis = ObjectHypothesisWithPose()
          
-#        print("OBJ_DATA LEN: ", len(object_data))
+        dimensions = object_data[2]
 
-        object_id=object_data[0]
-        object_score=object_data[1]
-        dimensions=object_data[2]
-        #print("DIMENSIONS: ", dimensions)
-
-#        obj.header=header
-#        obj_hypothesis.id = object_id
-#        obj_hypothesis.score = object_score
-#        obj.results.append(obj_hypothesis)
-        #obj.bbox.size_y = int((dimensions[2]-dimensions[0])*image_height)
-#        obj.bbox.size_x = int((dimensions[3]-dimensions[1] )*image_width)
-#        obj.bbox.center.x = int((dimensions[1] + dimensions [3])*image_height/2)
-#        obj.bbox.center.y = int((dimensions[0] + dimensions[2])*image_width/2)
+        obj.header = header
+        obj_hypothesis.id = object_data[0]
+        obj_hypothesis.score = object_data[1]
+        # get bounding box data
+        obj.results.append(obj_hypothesis)
+        obj.bbox.size_y = int((dimensions[2] - dimensions[0])*image_height)
+        obj.bbox.size_x = int((dimensions[3] - dimensions[1] )*image_width)
+        obj.bbox.center.x = int((dimensions[1] + dimensions [3])*image_height/2)
+        obj.bbox.center.y = int((dimensions[0] + dimensions[2])*image_width/2)
         return obj
 
 def main(args):
