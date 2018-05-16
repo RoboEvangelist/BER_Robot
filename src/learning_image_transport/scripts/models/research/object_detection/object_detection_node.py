@@ -51,7 +51,8 @@ categories = label_map_util.convert_label_map_to_categories( \
 category_index = label_map_util.create_category_index(categories)
 
 # # Detection
-
+min_detect_score = 0.7
+wanted_label = 1
 # Must set fraction of GPU, otherwise dynamic growth kills the GPU
 config = tf.ConfigProto()
 config.gpu_options.per_process_gpu_memory_fraction = 0.3
@@ -103,20 +104,19 @@ with detection_graph.as_default():
             use_normalized_coordinates=True,
             line_thickness=6)
 
-        print("BOXES: ", boxes)
-        print("BOXES: ", boxes)
         objArray.detections =[]
         objArray.header=data.header
         object_count=1
 
-        #for i in range(len(objects)):
-#        for i in range(5):
-#            object_count+=1
-#            objArray.detections.append(self.object_predict(objects[i],data.header,image_np,cv_image))
-#
-#        self.object_pub.publish(objArray)
-#
-#        img=cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
+        for i in range(num_detections[0]):
+            if (np.squeeze(scores)[i] > min_detect_score) and \
+                (np.squeeze(classes)[i] == wanted_label):
+#                object_count+=1
+#                objArray.detections.append(self.object_predict(objects[i], data.header, cv_image.shape))
+                print("Human Detected")
+
+        self.object_pub.publish(objArray)
+
         img = image_np
         image_out = Image()
         try:
@@ -127,8 +127,8 @@ with detection_graph.as_default():
         self.image_pub.publish(image_out)
 
 
-      def object_predict(self,object_data, header, image_np,image):
-        image_height,image_width,channels = image.shape
+      def object_predict(self,object_data, header,image_shape):
+        image_height,image_width,channels = image_shape
         obj=Detection2D()
         obj_hypothesis= ObjectHypothesisWithPose()
          
