@@ -18,9 +18,9 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='object_detection/protos/optimizer.proto',
   package='object_detection.protos',
-  syntax='proto2',
   serialized_pb=_b('\n\'object_detection/protos/optimizer.proto\x12\x17object_detection.protos\"\xb5\x02\n\tOptimizer\x12G\n\x12rms_prop_optimizer\x18\x01 \x01(\x0b\x32).object_detection.protos.RMSPropOptimizerH\x00\x12H\n\x12momentum_optimizer\x18\x02 \x01(\x0b\x32*.object_detection.protos.MomentumOptimizerH\x00\x12@\n\x0e\x61\x64\x61m_optimizer\x18\x03 \x01(\x0b\x32&.object_detection.protos.AdamOptimizerH\x00\x12 \n\x12use_moving_average\x18\x04 \x01(\x08:\x04true\x12$\n\x14moving_average_decay\x18\x05 \x01(\x02:\x06\x30.9999B\x0b\n\toptimizer\"\x9f\x01\n\x10RMSPropOptimizer\x12<\n\rlearning_rate\x18\x01 \x01(\x0b\x32%.object_detection.protos.LearningRate\x12%\n\x18momentum_optimizer_value\x18\x02 \x01(\x02:\x03\x30.9\x12\x12\n\x05\x64\x65\x63\x61y\x18\x03 \x01(\x02:\x03\x30.9\x12\x12\n\x07\x65psilon\x18\x04 \x01(\x02:\x01\x31\"x\n\x11MomentumOptimizer\x12<\n\rlearning_rate\x18\x01 \x01(\x0b\x32%.object_detection.protos.LearningRate\x12%\n\x18momentum_optimizer_value\x18\x02 \x01(\x02:\x03\x30.9\"M\n\rAdamOptimizer\x12<\n\rlearning_rate\x18\x01 \x01(\x0b\x32%.object_detection.protos.LearningRate\"\x80\x03\n\x0cLearningRate\x12O\n\x16\x63onstant_learning_rate\x18\x01 \x01(\x0b\x32-.object_detection.protos.ConstantLearningRateH\x00\x12`\n\x1f\x65xponential_decay_learning_rate\x18\x02 \x01(\x0b\x32\x35.object_detection.protos.ExponentialDecayLearningRateH\x00\x12T\n\x19manual_step_learning_rate\x18\x03 \x01(\x0b\x32/.object_detection.protos.ManualStepLearningRateH\x00\x12V\n\x1a\x63osine_decay_learning_rate\x18\x04 \x01(\x0b\x32\x30.object_detection.protos.CosineDecayLearningRateH\x00\x42\x0f\n\rlearning_rate\"4\n\x14\x43onstantLearningRate\x12\x1c\n\rlearning_rate\x18\x01 \x01(\x02:\x05\x30.002\"\x97\x01\n\x1c\x45xponentialDecayLearningRate\x12$\n\x15initial_learning_rate\x18\x01 \x01(\x02:\x05\x30.002\x12\x1c\n\x0b\x64\x65\x63\x61y_steps\x18\x02 \x01(\r:\x07\x34\x30\x30\x30\x30\x30\x30\x12\x1a\n\x0c\x64\x65\x63\x61y_factor\x18\x03 \x01(\x02:\x04\x30.95\x12\x17\n\tstaircase\x18\x04 \x01(\x08:\x04true\"\xda\x01\n\x16ManualStepLearningRate\x12$\n\x15initial_learning_rate\x18\x01 \x01(\x02:\x05\x30.002\x12V\n\x08schedule\x18\x02 \x03(\x0b\x32\x44.object_detection.protos.ManualStepLearningRate.LearningRateSchedule\x1a\x42\n\x14LearningRateSchedule\x12\x0c\n\x04step\x18\x01 \x01(\r\x12\x1c\n\rlearning_rate\x18\x02 \x01(\x02:\x05\x30.002\"\x9d\x01\n\x17\x43osineDecayLearningRate\x12!\n\x12learning_rate_base\x18\x01 \x01(\x02:\x05\x30.002\x12\x1c\n\x0btotal_steps\x18\x02 \x01(\r:\x07\x34\x30\x30\x30\x30\x30\x30\x12$\n\x14warmup_learning_rate\x18\x03 \x01(\x02:\x06\x30.0002\x12\x1b\n\x0cwarmup_steps\x18\x04 \x01(\r:\x05\x31\x30\x30\x30\x30')
 )
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -63,7 +63,7 @@ _OPTIMIZER = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='moving_average_decay', full_name='object_detection.protos.Optimizer.moving_average_decay', index=4,
       number=5, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0.9999),
+      has_default_value=True, default_value=0.9999,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -75,7 +75,6 @@ _OPTIMIZER = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
@@ -104,21 +103,21 @@ _RMSPROPOPTIMIZER = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='momentum_optimizer_value', full_name='object_detection.protos.RMSPropOptimizer.momentum_optimizer_value', index=1,
       number=2, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0.9),
+      has_default_value=True, default_value=0.9,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='decay', full_name='object_detection.protos.RMSPropOptimizer.decay', index=2,
       number=3, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0.9),
+      has_default_value=True, default_value=0.9,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='epsilon', full_name='object_detection.protos.RMSPropOptimizer.epsilon', index=3,
       number=4, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(1),
+      has_default_value=True, default_value=1,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -130,7 +129,6 @@ _RMSPROPOPTIMIZER = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -156,7 +154,7 @@ _MOMENTUMOPTIMIZER = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='momentum_optimizer_value', full_name='object_detection.protos.MomentumOptimizer.momentum_optimizer_value', index=1,
       number=2, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0.9),
+      has_default_value=True, default_value=0.9,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -168,7 +166,6 @@ _MOMENTUMOPTIMIZER = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -199,7 +196,6 @@ _ADAMOPTIMIZER = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -251,7 +247,6 @@ _LEARNINGRATE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
@@ -273,7 +268,7 @@ _CONSTANTLEARNINGRATE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='learning_rate', full_name='object_detection.protos.ConstantLearningRate.learning_rate', index=0,
       number=1, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0.002),
+      has_default_value=True, default_value=0.002,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -285,7 +280,6 @@ _CONSTANTLEARNINGRATE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -304,7 +298,7 @@ _EXPONENTIALDECAYLEARNINGRATE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='initial_learning_rate', full_name='object_detection.protos.ExponentialDecayLearningRate.initial_learning_rate', index=0,
       number=1, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0.002),
+      has_default_value=True, default_value=0.002,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -318,7 +312,7 @@ _EXPONENTIALDECAYLEARNINGRATE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='decay_factor', full_name='object_detection.protos.ExponentialDecayLearningRate.decay_factor', index=2,
       number=3, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0.95),
+      has_default_value=True, default_value=0.95,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -337,7 +331,6 @@ _EXPONENTIALDECAYLEARNINGRATE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -363,7 +356,7 @@ _MANUALSTEPLEARNINGRATE_LEARNINGRATESCHEDULE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='learning_rate', full_name='object_detection.protos.ManualStepLearningRate.LearningRateSchedule.learning_rate', index=1,
       number=2, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0.002),
+      has_default_value=True, default_value=0.002,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -375,7 +368,6 @@ _MANUALSTEPLEARNINGRATE_LEARNINGRATESCHEDULE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -393,7 +385,7 @@ _MANUALSTEPLEARNINGRATE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='initial_learning_rate', full_name='object_detection.protos.ManualStepLearningRate.initial_learning_rate', index=0,
       number=1, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0.002),
+      has_default_value=True, default_value=0.002,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -412,7 +404,6 @@ _MANUALSTEPLEARNINGRATE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -431,7 +422,7 @@ _COSINEDECAYLEARNINGRATE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='learning_rate_base', full_name='object_detection.protos.CosineDecayLearningRate.learning_rate_base', index=0,
       number=1, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0.002),
+      has_default_value=True, default_value=0.002,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -445,7 +436,7 @@ _COSINEDECAYLEARNINGRATE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='warmup_learning_rate', full_name='object_detection.protos.CosineDecayLearningRate.warmup_learning_rate', index=2,
       number=3, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0.0002),
+      has_default_value=True, default_value=0.0002,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -464,7 +455,6 @@ _COSINEDECAYLEARNINGRATE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -514,7 +504,6 @@ DESCRIPTOR.message_types_by_name['ConstantLearningRate'] = _CONSTANTLEARNINGRATE
 DESCRIPTOR.message_types_by_name['ExponentialDecayLearningRate'] = _EXPONENTIALDECAYLEARNINGRATE
 DESCRIPTOR.message_types_by_name['ManualStepLearningRate'] = _MANUALSTEPLEARNINGRATE
 DESCRIPTOR.message_types_by_name['CosineDecayLearningRate'] = _COSINEDECAYLEARNINGRATE
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Optimizer = _reflection.GeneratedProtocolMessageType('Optimizer', (_message.Message,), dict(
   DESCRIPTOR = _OPTIMIZER,
