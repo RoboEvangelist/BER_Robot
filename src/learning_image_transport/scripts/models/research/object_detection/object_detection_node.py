@@ -84,12 +84,10 @@ with detection_graph.as_default():
           cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
           print(e)
-        # tensorflow needs RGB, so convert here 
-        image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        # the array based representation of the image will be used later
-        #  in order to prepare the
-        # result image with boxes and labels on it.
-        image_np = np.asarray(image)
+        # it seems that CvBridge already transforms the image into the correct
+        # color format, and into a numpy array. So let's just feed the image 
+        # directly into the detection graph
+        image_np = cv_image
         # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
         image_np_expanded = np.expand_dims(image_np, axis=0)
         image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
