@@ -121,7 +121,7 @@ with detection_graph.as_default():
 
 def main(args):
     ic = image_converter()
-    rospy.init_node('object_detection', anonymous=False)
+    rospy.init_node('object_detection_node', anonymous=False)
     try:
         rospy.spin()
     except KeyboardInterrupt:
