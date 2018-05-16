@@ -2,16 +2,11 @@
 
 import numpy as np
 import os
-import six.moves.urllib as urllib
 import sys
-import tarfile
 import tensorflow as tf
-import zipfile
 
 from collections import defaultdict
 from io import StringIO
-#from matplotlib import pyplot as plt
-#from PIL import Image
 
 import roslib; roslib.load_manifest('learning_image_transport')
 import rospy
@@ -33,12 +28,10 @@ DOWNLOAD_BASE = 'http://download.tensorflow.org/models/object_detection/'
 # Path to frozen detection graph. This is the actual model that is used for the object detection.
 MODEL_PATH = os.path.join(os.path.dirname(sys.path[0]), \
     'object_detection', MODEL_NAME)
-#PATH_TO_CKPT = MODEL_NAME + '/frozen_inference_graph.pb'
 PATH_TO_CKPT = MODEL_PATH + '/frozen_inference_graph.pb'
 
 # List of the strings that is used to add correct label for each box.
 LABEL_NAME = 'mscoco_label_map.pbtxt'
-#PATH_TO_LABELS = os.path.join('data', 'mscoco_label_map.pbtxt')
 PATH_TO_LABELS = os.path.join(os.path.dirname(sys.path[0]), \
     'object_detection', 'data', LABEL_NAME)
 
@@ -57,21 +50,15 @@ categories = label_map_util.convert_label_map_to_categories( \
     label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
 category_index = label_map_util.create_category_index(categories)
 
-def load_image_into_numpy_array(image):
-  (im_width, im_height) = image.size
-  return np.array(image.getdata()).reshape(
-      (im_height, im_width, 3)).astype(np.uint8)
-
 # # Detection
 
-# Define the codec and create VideoWriter object
-#fourcc = cv2.VideoWriter_fourcc(*'XVID')
-#out = cv2.VideoWriter('output.avi',fourcc, 15.0, (640,480))
-#counter = 1
+# Must set fraction of GPU, otherwise dynamic growth kills the GPU
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.3
 
 # detect objects
 with detection_graph.as_default():
-  with tf.Session(graph=detection_graph) as sess:
+  with tf.Session(graph=detection_graph, config=config) as sess:
     class image_converter:
       def __init__(self):
         # publishes the images after objects are detected
@@ -80,8 +67,7 @@ with detection_graph.as_default():
             rospy.Publisher("objects", Detection2DArray, queue_size=1)
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/csi_cam/image_raw", Image, \
-            self.callback)
-            #self.callback, queue_size=1)
+            self.callback, queue_size=1)
     
       def callback(self,data):
         objArray = Detection2DArray()
@@ -108,7 +94,7 @@ with detection_graph.as_default():
             [boxes, scores, classes, num_detections],
             feed_dict={image_tensor: image_np_expanded})
         # Visualization of the results of a detection.
-        objects = vis_util.visualize_boxes_and_labels_on_image_array(
+        vis_util.visualize_boxes_and_labels_on_image_array(
             image_np,
             np.squeeze(boxes),
             np.squeeze(classes).astype(np.int32),
@@ -117,19 +103,20 @@ with detection_graph.as_default():
             use_normalized_coordinates=True,
             line_thickness=6)
 
+        print("BOXES: ", boxes)
+        print("BOXES: ", boxes)
         objArray.detections =[]
         objArray.header=data.header
         object_count=1
 
-        print("OBJECTS: ", len(objects))
-
-        for i in range(len(objects)):
-            object_count+=1
-            objArray.detections.append(self.object_predict(objects[i],data.header,image_np,cv_image))
-
-        self.object_pub.publish(objArray)
-
-        #img=cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
+        #for i in range(len(objects)):
+#        for i in range(5):
+#            object_count+=1
+#            objArray.detections.append(self.object_predict(objects[i],data.header,image_np,cv_image))
+#
+#        self.object_pub.publish(objArray)
+#
+#        img=cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
         img = image_np
         image_out = Image()
         try:
@@ -150,12 +137,12 @@ with detection_graph.as_default():
         object_id=object_data[0]
         object_score=object_data[1]
         dimensions=object_data[2]
-        print("DIMENSIONS: ", len(dimensions))
+        #print("DIMENSIONS: ", dimensions)
 
-        obj.header=header
-        obj_hypothesis.id = object_id
-        obj_hypothesis.score = object_score
-        obj.results.append(obj_hypothesis)
+#        obj.header=header
+#        obj_hypothesis.id = object_id
+#        obj_hypothesis.score = object_score
+#        obj.results.append(obj_hypothesis)
         #obj.bbox.size_y = int((dimensions[2]-dimensions[0])*image_height)
 #        obj.bbox.size_x = int((dimensions[3]-dimensions[1] )*image_width)
 #        obj.bbox.center.x = int((dimensions[1] + dimensions [3])*image_height/2)
@@ -169,7 +156,6 @@ def main(args):
         rospy.spin()
     except KeyboardInterrupt:
         print("Shutting down")
-    #cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     main(sys.argv)
