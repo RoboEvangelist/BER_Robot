@@ -10,14 +10,15 @@ import zipfile
 
 from collections import defaultdict
 from io import StringIO
-from matplotlib import pyplot as plt
-from PIL import Image
+#from matplotlib import pyplot as plt
+#from PIL import Image
 
 import roslib; roslib.load_manifest('learning_image_transport')
 import rospy
-from std_msgs.msg import String
+from std_msgs.msg import String , Header
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+from vision_msgs.msg import Detection2D, Detection2DArray, ObjectHypothesisWithPose
 
 import cv2
 
@@ -75,11 +76,15 @@ with detection_graph.as_default():
       def __init__(self):
         # publishes the images after objects are detected
         self.image_pub = rospy.Publisher("image_topic_2", Image, queue_size=1)
+        self.object_pub = \
+            rospy.Publisher("objects", Detection2DArray, queue_size=1)
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/csi_cam/image_raw", Image, \
             self.callback)
+            #self.callback, queue_size=1)
     
       def callback(self,data):
+        objArray = Detection2DArray()
         try:
           cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
@@ -103,7 +108,7 @@ with detection_graph.as_default():
             [boxes, scores, classes, num_detections],
             feed_dict={image_tensor: image_np_expanded})
         # Visualization of the results of a detection.
-        vis_util.visualize_boxes_and_labels_on_image_array(
+        objects = vis_util.visualize_boxes_and_labels_on_image_array(
             image_np,
             np.squeeze(boxes),
             np.squeeze(classes).astype(np.int32),
@@ -111,20 +116,60 @@ with detection_graph.as_default():
             category_index,
             use_normalized_coordinates=True,
             line_thickness=6)
-    
+
+        objArray.detections =[]
+        objArray.header=data.header
+        object_count=1
+
+        print("OBJECTS: ", len(objects))
+
+        for i in range(len(objects)):
+            object_count+=1
+            objArray.detections.append(self.object_predict(objects[i],data.header,image_np,cv_image))
+
+        self.object_pub.publish(objArray)
+
+        #img=cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
+        img = image_np
+        image_out = Image()
         try:
-          self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
+          image_out = self.bridge.cv2_to_imgmsg(img, "bgr8")
         except CvBridgeError as e:
           print(e)
+        image_out.header = data.header
+        self.image_pub.publish(image_out)
+
+
+      def object_predict(self,object_data, header, image_np,image):
+        image_height,image_width,channels = image.shape
+        obj=Detection2D()
+        obj_hypothesis= ObjectHypothesisWithPose()
+         
+#        print("OBJ_DATA LEN: ", len(object_data))
+
+        object_id=object_data[0]
+        object_score=object_data[1]
+        dimensions=object_data[2]
+        print("DIMENSIONS: ", len(dimensions))
+
+        obj.header=header
+        obj_hypothesis.id = object_id
+        obj_hypothesis.score = object_score
+        obj.results.append(obj_hypothesis)
+        #obj.bbox.size_y = int((dimensions[2]-dimensions[0])*image_height)
+#        obj.bbox.size_x = int((dimensions[3]-dimensions[1] )*image_width)
+#        obj.bbox.center.x = int((dimensions[1] + dimensions [3])*image_height/2)
+#        obj.bbox.center.y = int((dimensions[0] + dimensions[2])*image_width/2)
+        return obj
 
 def main(args):
-    ic = image_converter()
     rospy.init_node('object_detection_node', anonymous=False)
+    ic = image_converter()
     try:
         rospy.spin()
     except KeyboardInterrupt:
         print("Shutting down")
-    cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     main(sys.argv)
