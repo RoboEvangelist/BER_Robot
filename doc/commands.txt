@@ -2,3 +2,13 @@ rosrun image_transport republish raw in:=/image_topic_2 compressed out:=/image_t
 rosrun image_view image_view image:=/image_topic_2_compressed _image_transport:=compressed
 roslaunch jetson_csi_cam jetson_csi_cam.launch width:=960 height:=540
 rosrun learning_image_transport object_detection_tutorial.py
+
+All operations as root:
+
+turn off HDMI:
+echo -1 > /sys/kernel/debug/tegra_hdmi/hotplug
+echo 4 > /sys/class/graphics/fb0/blank
+
+turn on HDMI:
+echo 1 > /sys/kernel/debug/tegra_hdmi/hotplug
+echo 0 > /sys/class/graphics/fb0/blank
