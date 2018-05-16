@@ -55,7 +55,7 @@ min_detect_score = 0.7
 wanted_label = 1
 # Must set fraction of GPU, otherwise dynamic growth kills the GPU
 config = tf.ConfigProto()
-config.gpu_options.per_process_gpu_memory_fraction = 0.3
+config.gpu_options.per_process_gpu_memory_fraction = 0.1
 
 # detect objects
 with detection_graph.as_default():
