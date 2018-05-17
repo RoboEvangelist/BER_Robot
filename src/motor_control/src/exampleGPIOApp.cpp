@@ -35,7 +35,7 @@ void object_dection_callback(const vision_msgs::Detection2DArray::ConstPtr& msg)
     }
   }
   else {
-    reset_bbox()
+    reset_bbox();
     ROS_INFO("No Objects");
   }
 }
