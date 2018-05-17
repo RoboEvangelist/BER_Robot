@@ -17,7 +17,7 @@ uint32_t box_width = 0;
 uint32_t box_height = 0;
 float box_area= 0;
 
-float image_area = 0;
+float image_area = 10000000;
 float image_center = 0;
 
 int32_t bbox_center_to_img_center_distance = 0;
@@ -27,6 +27,7 @@ void reset_bbox() {
   box_center_y = 0;
   box_width = 0;
   box_height = 0;
+  box_area= 0;
 }
 
 /**
@@ -80,17 +81,21 @@ int main(int argc, char** argv) {
    * This is a message object. You stuff it with data, and then publish it.
    */
   std_msgs::String msg;
+  bool distance_is_big = false;
 
   while (ros::ok()) {
     std::stringstream ss;
+
     distance_from_center_threshold =
       (image_center * kMaxDistanceToImgCenterRatio);
-    if ((distance_from_center_threshold > 0) &&
-      (std::abs(bbox_center_to_img_center_distance) > distance_from_center_threshold)) {
-      if (box_center_x > image_center) {
+
+    if ((distance_from_center_threshold > 0) && (box_area != 0)) {
+      distance_is_big = (std::abs(bbox_center_to_img_center_distance) >
+        distance_from_center_threshold);
+      if ((box_center_x > image_center) && distance_is_big) {
         ss << "Turn Right";
       }
-      else if (box_center_x < image_center) {
+      else if ((box_center_x < image_center) && distance_is_big) {
         ss << "Trun Left";
       }
       else if ((box_area / image_area) > kMaxObjectAreaRatio) {
