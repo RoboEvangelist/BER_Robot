@@ -3,6 +3,8 @@ rosrun image_view image_view image:=/image_topic_2_compressed _image_transport:=
 
 running the camera at a low FPS seems to help saving GPU memory
 roslaunch jetson_csi_cam jetson_csi_cam.launch width:=960 height:=540 fps:=10
+rosrun image_view image_view image:=/csi_cam/image_raw_compressed _image_transport:=compressed
+rosrun image_transport republish raw in:=/csi_cam/image_raw compressed out:=/csi_cam/image_raw_compressed
 
 rosrun learning_image_transport object_detection_tutorial.py
 
