@@ -130,7 +130,7 @@ with detection_graph.as_default():
 
 
       def object_predict(self, object_data, header, image_shape):
-        image_height,image_width,channels = image_shape
+        image_height, image_width, channels = image_shape
         obj = Detection2D()
         obj_hypothesis = ObjectHypothesisWithPose()
          
@@ -145,6 +145,8 @@ with detection_graph.as_default():
         obj.bbox.size_x = int((dimensions[3] - dimensions[1] )*image_width)
         obj.bbox.center.x = int((dimensions[1] + dimensions [3])*image_height/2)
         obj.bbox.center.y = int((dimensions[0] + dimensions[2])*image_width/2)
+        obj.source_img.height = image_height
+        obj.source_img.width = image_width
         return obj
 
 def main(args):
