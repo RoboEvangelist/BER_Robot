@@ -51,7 +51,7 @@ categories = label_map_util.convert_label_map_to_categories( \
 category_index = label_map_util.create_category_index(categories)
 
 # # Detection
-min_detect_score = 0.7
+min_detect_score = 0.8
 wanted_label = 1
 # Must set fraction of GPU, otherwise dynamic growth kills the GPU
 config = tf.ConfigProto()
