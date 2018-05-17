@@ -141,10 +141,10 @@ with detection_graph.as_default():
         obj_hypothesis.score = object_data[1]
         # get bounding box data
         obj.results.append(obj_hypothesis)
-        obj.bbox.size_y = int((dimensions[2] - dimensions[0])*image_height)
         obj.bbox.size_x = int((dimensions[3] - dimensions[1] )*image_width)
-        obj.bbox.center.x = int((dimensions[1] + dimensions [3])*image_height/2)
-        obj.bbox.center.y = int((dimensions[0] + dimensions[2])*image_width/2)
+        obj.bbox.size_y = int((dimensions[2] - dimensions[0])*image_height)
+        obj.bbox.center.x = int((dimensions[1] + dimensions [3])*image_width/2)
+        obj.bbox.center.y = int((dimensions[0] + dimensions[2])*image_height/2)
         obj.source_img.height = image_height
         obj.source_img.width = image_width
         return obj
