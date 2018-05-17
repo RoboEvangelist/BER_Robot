@@ -51,7 +51,7 @@ categories = label_map_util.convert_label_map_to_categories( \
 category_index = label_map_util.create_category_index(categories)
 
 # # Detection
-min_detect_score = 0.7
+min_detect_score = 0.8
 wanted_label = 1
 # Must set fraction of GPU, otherwise dynamic growth kills the GPU
 config = tf.ConfigProto()
@@ -130,7 +130,7 @@ with detection_graph.as_default():
 
 
       def object_predict(self, object_data, header, image_shape):
-        image_height,image_width,channels = image_shape
+        image_height, image_width, channels = image_shape
         obj = Detection2D()
         obj_hypothesis = ObjectHypothesisWithPose()
          
@@ -141,10 +141,12 @@ with detection_graph.as_default():
         obj_hypothesis.score = object_data[1]
         # get bounding box data
         obj.results.append(obj_hypothesis)
-        obj.bbox.size_y = int((dimensions[2] - dimensions[0])*image_height)
         obj.bbox.size_x = int((dimensions[3] - dimensions[1] )*image_width)
-        obj.bbox.center.x = int((dimensions[1] + dimensions [3])*image_height/2)
-        obj.bbox.center.y = int((dimensions[0] + dimensions[2])*image_width/2)
+        obj.bbox.size_y = int((dimensions[2] - dimensions[0])*image_height)
+        obj.bbox.center.x = int((dimensions[1] + dimensions [3])*image_width/2)
+        obj.bbox.center.y = int((dimensions[0] + dimensions[2])*image_height/2)
+        obj.source_img.height = image_height
+        obj.source_img.width = image_width
         return obj
 
 def main(args):
