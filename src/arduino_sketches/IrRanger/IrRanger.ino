@@ -159,7 +159,7 @@ void loop()
 {
   /// lets add sleep to avoid crashing the arduino
   delay(50);
-  /*
+  
   left_range_msg.range = getRange(left_analog_pin);
   left_range_msg.header.stamp = nh.now();
   left_pub_range.publish(&left_range_msg);
@@ -207,12 +207,12 @@ void loop()
     stopCar();
     object_on_center_state = false;
   }
-  */
+  
 
   /// give priority to proximity sensors
-  //if ((object_on_left_state == false) &&
-  //  (object_on_right_state == false) && (object_on_center_state == false))
-  //{
+  if ((object_on_left_state == false) &&
+    (object_on_right_state == false) && (object_on_center_state == false))
+  {
   if (int_msg.data == str_right) {
     turnCarRight();
     moveCarForward();
@@ -232,7 +232,7 @@ void loop()
     stopCar();
   }
   chatter.publish(&int_msg);
-  //}
+  }
     
   //stopCar();
   nh.spinOnce();
