@@ -25,28 +25,28 @@ ros::Publisher center_pub_range("center_range_data", &center_range_msg);
 sensor_msgs::Range right_range_msg;
 ros::Publisher right_pub_range("right_range_data", &right_range_msg);
 
-const int left_analog_pin = 2;    /**< robot's left IR sensor */
-const int center_analog_pin = 1;  /**< center IR sensor */
-const int right_analog_pin = 0;   /**< robot's right IR sensor */
-const int time_delta = 1000;
-const int left_right_max_analog = 650; /**< 650 equivalent to 10cm */
-const int left_right_min_analog = 300;  /**< minimum save analog reading */
-const int center_max_analog = 650; /**< 650 equivalent to 4cm */
-const int center_min_analog = 100;  /**< minimum safe analog reading before avoiding an obstacle */
+const uint8_t left_analog_pin = 2;    /**< robot's left IR sensor */
+const uint8_t center_analog_pin = 1;  /**< center IR sensor */
+const uint8_t right_analog_pin = 0;   /**< robot's right IR sensor */
+const uint16_t time_delta = 1000;
+const uint16_t left_right_max_analog = 650; /**< 650 equivalent to 10cm */
+const uint16_t left_right_min_analog = 300;  /**< minimum save analog reading */
+const uint16_t center_max_analog = 650; /**< 650 equivalent to 4cm */
+const uint8_t center_min_analog = 100;  /**< minimum safe analog reading before avoiding an obstacle */
 
 /// pins control the motor controller
-const int motor_conroller_one_pin = 5;
-const int motor_conroller_two_pin = 6;
+const uint8_t motor_conroller_one_pin = 5;
+const uint8_t motor_conroller_two_pin = 6;
 
 /// if you do 100 and 100, then the car stops
-const int pin_one_motor_speed = 100;  /**< Keep this one constant to control max speed */
+const uint8_t pin_one_motor_speed = 100;  /**< Keep this one constant to control max speed */
 int pin_two_motor_speed = 0;          /**< switch this one between 100 and 200 for slow speed */
-const int kMaxVelForward = 165;
-const int kMinVelBackward = 40;
+const uint8_t kMaxVelForward = 165;
+const uint8_t kMinVelBackward = 40;
 
-const int car_turn_one_pin = 9;
-const int car_turn_two_pin = 10;
-int pin_one_turn_speed = 0;
+const uint8_t car_turn_one_pin = 9;
+const uint8_t car_turn_two_pin = 10;
+uint8_t pin_one_turn_speed = 0;
 int pin_two_turn_speed = 0;
 unsigned long range_timer;
 
@@ -54,12 +54,6 @@ unsigned long range_timer;
 bool object_on_left_state = false;
 bool object_on_right_state = false;
 bool object_on_center_state = false;
-
-void moveCarCb( const std_msgs::String& toggle_msg){
-  //digitalWrite(13, HIGH-digitalRead(13));   // blink the led
-}
-
-ros::Subscriber<std_msgs::String> sub("move_car", &moveCarCb );
 
 void stopCar() {
   analogWrite(motor_conroller_one_pin, pin_one_motor_speed);
@@ -94,21 +88,34 @@ void wheelsStraight() {
   analogWrite(car_turn_two_pin, 255);
 }
 
+void messageCb(const std_msgs::String& msg){
+  /// give priority to proximity sensors
+  if ((object_on_left_state == false) &&
+    (object_on_right_state == false) && (object_on_center_state == false))
+  {
+    if (msg.data == "Turn Right")
+      turnCarRight();
+    else if (msg.data == "Turn Left")
+      turnCarLeft();
+    else if (msg.data == "Go Back")
+      moveCarBackward();
+    else if (msg.data == "Go Forward")
+      moveCarForward();
+    else
+      stopCar();
+  }
+}
+
+ros::Subscriber<std_msgs::String> sub("car_direction", &messageCb);
+
 /*
  * getRange() - samples the analog input from the ranger
  * and converts it into meters.  
  */
 float getRange(int pin_num){
-    int sample;
+    uint16_t sample;
     // Get data
     sample = analogRead(pin_num);
-    // if the ADC reading is too low, 
-    //   then we are really far away from anything
-//    if(sample < 10)
-//        return 254;     // max range
-    // Magic numbers to get cm
-//    sample= 1309/(sample-3);
-//    return (sample - 1)/100; //convert to meters
     return sample;
 }
 
@@ -146,6 +153,9 @@ void setup()
   /// Sharp IR Range Finder 2Y0A21
   right_range_msg = left_range_msg;
   right_range_msg.header.frame_id = right_frameid;
+
+  /// subscriber to car move topic
+  nh.subscribe(sub);
 }
 
 void loop()
