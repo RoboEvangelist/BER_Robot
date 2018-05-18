@@ -96,15 +96,15 @@ int main(int argc, char** argv) {
         ss << "Turn Right";
       }
       else if ((box_center_x < image_center) && distance_is_big) {
-        ss << "Trun Left";
+        ss << "Turn Left";
       }
       else if ((box_area / image_area) > kMaxObjectAreaRatio) {
         /// if object is too big, move back
-        ss << "Move Back";
+        ss << "Go Back";
       }
       else if ((box_area / image_area) < kMinObjectAreaRatio) {
         /// if object is too small, move forward
-        ss << "Move Forward";
+        ss << "Go Forward";
       }
       else {
         ss << "Stop";
