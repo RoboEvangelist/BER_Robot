@@ -3,7 +3,7 @@
 #include <motor_control/motor_control.hpp>
 
 #include "ros/ros.h"
-#include "std_msgs/String.h"
+#include "std_msgs/Int8.h"
 #include "vision_msgs/ObjectHypothesisWithPose.h"
 #include "vision_msgs/Detection2D.h"
 #include "vision_msgs/Detection2DArray.h"
@@ -65,26 +65,32 @@ int main(int argc, char** argv) {
   ros::NodeHandle nh;
   /// publisher to publish motor control commands
   ros::Publisher car_direction_pub =
-    nh.advertise<std_msgs::String>("car_direction", 1);
+    nh.advertise<std_msgs::Int8>("car_direction", 1);
   /// subscriver to the object detection
   /// let's set the queue size to five for now because the python object
   /// detections runs at about 4Hz
   ros::Subscriber sub = nh.subscribe("/objects", 5, object_dection_callback);
   /// send 30 messages per second
-  ros::Rate loop_rate(10);
+  ros::Rate loop_rate(20);
   
   uint32_t distance_from_center_threshold = 0; 
   float kMaxDistanceToImgCenterRatio = 1.0/5;
   float kMaxObjectAreaRatio = 1.0/2;
   float kMinObjectAreaRatio = 1.0/4;
+  bool distance_is_big = false;
+
+  const int8_t kBack = -1;
+  const int8_t kStop = 0;
+  const int8_t kForward = 1;
+  const int8_t kLeft = 2;
+  const int8_t kRight = 3;
   /**
    * This is a message object. You stuff it with data, and then publish it.
    */
-  std_msgs::String msg;
-  bool distance_is_big = false;
+  std_msgs::Int8 msg;
 
   while (ros::ok()) {
-    std::stringstream ss;
+    int8_t ss;
 
     distance_from_center_threshold =
       (image_center * kMaxDistanceToImgCenterRatio);
@@ -93,28 +99,34 @@ int main(int argc, char** argv) {
       distance_is_big = (std::abs(bbox_center_to_img_center_distance) >
         distance_from_center_threshold);
       if ((box_center_x > image_center) && distance_is_big) {
-        ss << "Turn Right";
+        /// Right
+        ss = kRight;
       }
       else if ((box_center_x < image_center) && distance_is_big) {
-        ss << "Turn Left";
+        /// Left
+        ss = kLeft;
       }
       else if ((box_area / image_area) > kMaxObjectAreaRatio) {
+        /// Move Back
         /// if object is too big, move back
-        ss << "Go Back";
+        ss = kBack;
       }
       else if ((box_area / image_area) < kMinObjectAreaRatio) {
+        /// Move Forward
         /// if object is too small, move forward
-        ss << "Go Forward";
+        ss = kForward;
       }
       else {
-        ss << "Stop";
+        /// Stop
+        ss = kStop;
       }
     }
     else {
-      ss << "Stop";
+      /// Stop
+      ss = kStop;
     }
 
-    msg.data = ss.str();
+    msg.data = ss;
 
     /**
      * The publish() function is how you send messages. The parameter

@@ -7,11 +7,17 @@
 #include <ros.h>
 #include <ros/time.h>
 #include <sensor_msgs/Range.h>
-#include <std_msgs/String.h>
+#include <std_msgs/Int8.h>
 
 char left_frameid[] = "/ir_left_ranger";
 char center_frameid[] = "/ir_center_ranger";
 char right_frameid[] = "/ir_right_ranger";
+
+int8_t str_back = -1;
+int8_t str_forward = 1;
+int8_t str_left = 2 ;
+int8_t str_right = 3;
+std_msgs::Int8 int_msg;
 
 ros::NodeHandle nh;
 
@@ -24,6 +30,8 @@ ros::Publisher center_pub_range("center_range_data", &center_range_msg);
 /// right IR sensor
 sensor_msgs::Range right_range_msg;
 ros::Publisher right_pub_range("right_range_data", &right_range_msg);
+
+ros::Publisher chatter("chatter", &int_msg);
 
 const uint8_t left_analog_pin = 2;    /**< robot's left IR sensor */
 const uint8_t center_analog_pin = 1;  /**< center IR sensor */
@@ -55,11 +63,6 @@ bool object_on_left_state = false;
 bool object_on_right_state = false;
 bool object_on_center_state = false;
 
-void stopCar() {
-  analogWrite(motor_conroller_one_pin, pin_one_motor_speed);
-  analogWrite(motor_conroller_two_pin, 100);
-}
-
 void moveCarForward() {
   analogWrite(motor_conroller_one_pin, pin_one_motor_speed);
   analogWrite(motor_conroller_two_pin, kMaxVelForward);
@@ -83,30 +86,22 @@ void turnCarRight() {
 }
 
 void wheelsStraight() {
-  analogWrite(car_turn_one_pin, 0);
+  analogWrite(car_turn_one_pin, 255);
   ///in this pin 100 = complete left turn, 255 = wheels straigth 
   analogWrite(car_turn_two_pin, 255);
 }
 
-void messageCb(const std_msgs::String& msg){
-  /// give priority to proximity sensors
-  if ((object_on_left_state == false) &&
-    (object_on_right_state == false) && (object_on_center_state == false))
-  {
-    if (msg.data == "Turn Right")
-      turnCarRight();
-    else if (msg.data == "Turn Left")
-      turnCarLeft();
-    else if (msg.data == "Go Back")
-      moveCarBackward();
-    else if (msg.data == "Go Forward")
-      moveCarForward();
-    else
-      stopCar();
-  }
+void stopCar() {
+  analogWrite(motor_conroller_one_pin, pin_one_motor_speed);
+  analogWrite(motor_conroller_two_pin, 100);
+  wheelsStraight();
 }
 
-ros::Subscriber<std_msgs::String> sub("car_direction", &messageCb);
+void messageCb(const std_msgs::Int8& msg){
+  int_msg = msg;
+}
+
+ros::Subscriber<std_msgs::Int8> sub("/car_direction", &messageCb);
 
 /*
  * getRange() - samples the analog input from the ranger
@@ -121,6 +116,7 @@ float getRange(int pin_num){
 
 void setup()
 {
+  int_msg.data = 0;
   /// set pwm pins as output
   pinMode(motor_conroller_one_pin, OUTPUT);
   pinMode(motor_conroller_two_pin, OUTPUT);
@@ -128,7 +124,7 @@ void setup()
   
   pinMode(car_turn_one_pin, OUTPUT);
   pinMode(car_turn_two_pin, OUTPUT);
-  wheelsStraight();
+  //wheelsStraight();
 
   nh.initNode();
   nh.advertise(left_pub_range);
@@ -156,12 +152,14 @@ void setup()
 
   /// subscriber to car move topic
   nh.subscribe(sub);
+  nh.advertise(chatter);
 }
 
 void loop()
 {
   /// lets add sleep to avoid crashing the arduino
   delay(50);
+  /*
   left_range_msg.range = getRange(left_analog_pin);
   left_range_msg.header.stamp = nh.now();
   left_pub_range.publish(&left_range_msg);
@@ -188,6 +186,7 @@ void loop()
     /// left and right side are clear
     object_on_left_state = false;
     object_on_right_state = false;
+    wheelsStraight();
   }
 
   /// Sharp IR Ranger, Model# GP2D120XJ00F
@@ -205,9 +204,35 @@ void loop()
   else {
     /// TODO: stop car only if object no longer too close, but don't interrupt the
     /// other functions that need to move the car
-    //stopCar();
+    stopCar();
     object_on_center_state = false;
   }
+  */
+
+  /// give priority to proximity sensors
+  //if ((object_on_left_state == false) &&
+  //  (object_on_right_state == false) && (object_on_center_state == false))
+  //{
+  if (int_msg.data == str_right) {
+    turnCarRight();
+    moveCarForward();
+  }
+  else if (int_msg.data == str_left) {
+    turnCarLeft();
+    moveCarForward();
+  }
+  else if (int_msg.data == str_back) {
+    moveCarBackward();
+  }
+  else if (int_msg.data == str_forward) {
+    moveCarForward();
+    wheelsStraight();
+  }
+  else {
+    stopCar();
+  }
+  chatter.publish(&int_msg);
+  //}
     
   //stopCar();
   nh.spinOnce();
