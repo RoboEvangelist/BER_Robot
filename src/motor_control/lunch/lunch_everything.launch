@@ -1,0 +1,10 @@
+<launch>
+  <!--motor control tells car where to move when person is detected. -->
+  <node name="motor_control" pkg="motor_control" type="motor_control" output="screen">
+  </node>
+
+  <!--launch node to detect objects. -->
+  <node name="object_detection_node" pkg="learning_image_transport" type="object_detection_node" output="screen">
+  </node>
+
+</launch>
