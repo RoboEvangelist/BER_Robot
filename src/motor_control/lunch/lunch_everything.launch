@@ -12,7 +12,6 @@
   <include file="$(find jetson_csi_cam)/jetson_csi_cam.launch">
     <arg name="width" value="960" />
     <arg name="height" value="540" />
-    <arg name="fps" value="30" />
   </include>
 
   <!--launch node to detect objects. -->
