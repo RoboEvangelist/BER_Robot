@@ -47,15 +47,15 @@ const uint8_t motor_conroller_one_pin = 5;
 const uint8_t motor_conroller_two_pin = 6;
 
 /// if you do 100 and 100, then the car stops
-const uint8_t pin_one_motor_speed = 100;  /**< Keep this one constant to control max speed */
-int pin_two_motor_speed = 0;          /**< switch this one between 100 and 200 for slow speed */
-const uint8_t kMaxVelForward = 165;
+const uint8_t pin_one_motor_speed = 120;  /**< Keep this one constant to control max speed */
+const uint8_t pin_two_motor_speed = 100;          /**< switch this one between 100 and 200 for slow speed */
+const uint8_t kMaxVelForward = 190;
 const uint8_t kMinVelBackward = 40;
 
 const uint8_t car_turn_one_pin = 9;
 const uint8_t car_turn_two_pin = 10;
 uint8_t pin_one_turn_speed = 0;
-int pin_two_turn_speed = 0;
+uint8_t pin_two_turn_speed = 0;
 unsigned long range_timer;
 
 /// check if there are objects too close before car is ordered to moves
@@ -64,7 +64,7 @@ bool object_on_right_state = false;
 bool object_on_center_state = false;
 
 void moveCarForward() {
-  analogWrite(motor_conroller_one_pin, pin_one_motor_speed);
+  analogWrite(motor_conroller_one_pin, pin_two_motor_speed);
   analogWrite(motor_conroller_two_pin, kMaxVelForward);
 }
 
